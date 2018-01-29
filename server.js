@@ -81,7 +81,7 @@ app.post('/set', function (req, res1) {
         res.send("put an ariyala link here please")
     }
     else{*/
-        id='14B0G'
+        id='14PF6'
         http.get("http://ffxiv.ariyala.com/store.app?identifier="+id, function(res){
             res.on("data", function(data){
                 truc = JSON.parse(data);
@@ -104,7 +104,15 @@ app.post('/set', function (req, res1) {
                                     if (err) throw err;
                                 });
                                 for (var i = data.length - 1; i >= 0; i--) {
-                                    if(typeof data[i].source.purchase === typeof undefined){
+                                    if(typeof data[i].source.crafting !== typeof undefined){
+                                        stars = "";
+                                        for (var j = data[i].source.crafting.stars.length - 1; j >= 0; j--) {
+                                            stars += "★"
+                                        }
+                                        craft = data[i].source.crafting.class +" (" + stars+")";
+                                        dataSQL = [data[i].name.en, 0, null, data[i].slot, craft]
+                                    }
+                                    else if(typeof data[i].source.purchase === typeof undefined){
                                         dataSQL = [data[i].name.en, 0, null, data[i].slot, data[i].source.drop.name]
                                     }else if (typeof data[i].source.drop === typeof undefined){
                                         dataSQL = [data[i].name.en, data[i].source.purchase[0].price[0][1].amount, data[i].source.purchase[0].price[0][1].item, data[i].slot, "purchase only"];
@@ -117,7 +125,7 @@ app.post('/set', function (req, res1) {
                                             if (err) throw err;
                                         })
                                     }
-                                    if(typeof data[i].source.drop.name !== typeof undefined){
+                                    if(typeof data[i].source.drop !== typeof undefined){
                                         con.query('insert ignore into instance (name) values (?);', [data[i].source.drop.name], function(err, result){
                                             if (err) throw err;
                                         })
