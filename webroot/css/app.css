@@ -1,0 +1,28 @@
+main{
+	margin-left: 1%; margin-right: 1%;
+}
+
+input[type=checkbox] {
+	display: none;
+}
+.roundedOne {
+	position: relative;
+}
+.roundedOne label {
+	margin: auto;
+	display: block;
+	cursor: pointer;
+	width: 20px;
+	height: 20px;
+	border-radius: 50px;
+	border: 1px solid grey;
+	background: none;
+}
+
+.roundedOne label:hover {
+	border-color: #5588AA;
+}
+
+.roundedOne input[type=checkbox]:checked + label {
+	background: #66C5D5;
+}

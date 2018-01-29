@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>player</title>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="css/app.css">
+	<script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/vue.js"></script>
+	<script type="text/javascript" src="js/app_mate.js"></script>
+	<script type="text/javascript" src="js/vue-strap.min.js"></script>
+	<script type="text/javascript" src="js/savon-temporel.js"></script>
+</head>
+<body>
+	<header></header>
+	<main class="container-full" id="main">
+		<h1 id="top">Elulia's Set</h1>
+		<a href="index_team.html">Home</a>
+		<form>
+			<table class="table table-bordered table-hover">
+				<tr class="nosel">
+					<th>Name
+					</th>
+					<th>Price</th>
+					<th>Action</th>
+				</tr>
+				<tr v-for="(item,i) in data">
+					<td>
+						{{ item.name }}
+					</td>
+					<td>
+						{{ item.price }}
+					</td>
+					<td>
+						<div class="roundedOne">
+							<input type="checkbox" v-bind:id="i" v-bind:name="i" />
+							<label v-bind:for="i"></label>
+						</div>
+					</td>
+				</tr>
+			</table>
+			<input type="submit" name="">
+		</form>
+
+	</main>
+</body>
+</html>

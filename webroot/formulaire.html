@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Formulaire</title>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="css/app.css">
+	<script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/vue.js"></script>
+	<script type="text/javascript" src="js/app_formulaire.js"></script>
+	<script type="text/javascript" src="js/vue-strap.min.js"></script>
+</head>
+<body>
+	<header></header>
+	<main class="container-full">
+		<form method="post" action="set">
+			<p>
+				<label for='name'>Name :</label>
+				<input type="text" name="name" id="name" placeholder="Name" size="30" maxlength="10" />
+
+				<label for='name'>Ariala's link :</label>
+				<input type="text" name="link" id="link" placeholder="http://ffxiv.ariyala.com/14B0G" size="30" maxlength="50" />
+				<button type="button" v-on:click="newSet">Ok</button>
+			</p>
+		</form>
+		<form method="post" action="team" id="form">
+			<p>
+				<label for='name'>Name :</label>
+				<input type="text" name="name" id="name" placeholder="Team's Name" size="30" maxlength="10" />
+				<button type="button" v-on:click="addPlayer">+</button>
+				<fieldset v-for="player in players">
+					<label for='name'>Player :</label>
+					<input type="text" name="player1" id="player1" placeholder="player's name" size="30" maxlength="10" />
+					<label for="class">Class :</label>
+					<select name="class" id="class">
+						<option v-for="classe in data" v-bind:value="classe.name" >{{ classe.name }}</option>
+					</select>
+				</fieldset>
+				<input type="submit" v-on:click="newTeam" value="Ok" />
+			</p>
+		</form>
+		<form method="put" action="team">
+			<p>
+				<label for='name'>Change Team's name :</label>
+				<input type="text" name="name" id="name" placeholder="New Team's Name" size="30" maxlength="10" />
+				<button type="button" v-on:click="addPlayer">+</button>
+				<fieldset v-for="player in players">
+					<label for='name'>Player :</label>
+					<input type="text" name="player1" id="player1" placeholder="player's name" size="30" maxlength="10" />
+					<label for="class">Class :</label>
+					<select name="class" id="class">
+						<option v-for="classe in data" v-bind:value="classe.name" >{{ classe.name }}</option>
+					</select>
+				</fieldset>
+				<input type="submit" value="Ok" />
+			</p>
+		</form>
+		<form method="post" action="character">
+			<p>
+				<label for='name'>Player's name :</label>
+				<input type="text" name="name" id="name" placeholder="Player's Name" size="30" maxlength="10" />
+				<input type="submit" value="Ok" />
+			</p>
+		</form>
+		<form method="put" action="character">
+			<p>
+				<label for='name'>Player's name :</label>
+				<input type="text" name="name" id="name" placeholder="New Player's Name" size="30" maxlength="10" />
+				<input type="submit" value="change" />
+			</p>
+		</form>
+	</main>
+</body>
+</html>

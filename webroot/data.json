@@ -1,0 +1,196 @@
+{
+	"title": "Savage Drops/Tokens",
+	"team": [
+		{
+			"name": "Agnys",
+			"job": "WAR",
+			"set": []
+		},
+		{
+			"name": "Sky",
+			"job": "DRK",
+			"set": []
+		},
+		{
+			"name": "Abbis",
+			"job": "SCH",
+			"set": []
+		},
+		{
+			"name": "Elulia",
+			"job": "WHM",
+			"set": [
+				{
+					"name": "Genji Cane",
+					"iLvl": "345",
+					"Type": "Weapon",
+					"price": "8x Deltascape Datalog v4.0"
+				},
+				{
+					"name": "Genji Domaru of Healing",
+					"iLvl": "340",
+					"Type": "Armor",
+					"price": "8x Deltascape Datalog v4.0"
+				},
+				{
+					"name": "Genji Tsutsu-hakama of Healing",
+					"iLvl": "340",
+					"Type": "Legs",
+					"price": "8x Deltascape Datalog v3.0"
+				},
+				{
+					"name": "Genji Eboshi of Healing",
+					"iLvl": "340",
+					"Type": "Head",
+					"price": "6x Deltascape Datalog v2.0"
+				},
+				{
+					"name": "Genji Kote of Healing",
+					"iLvl": "340",
+					"Type": "Hands",
+					"price": "6x Deltascape Datalog v2.0"
+				},
+				{
+					"name": "Genji Sune-ate of Healing",
+					"iLvl": "340",
+					"Type": "Feet",
+					"price": "6x Deltascape Datalog v2.0"
+				},
+				{
+					"name": "Genji Obi of Healing",
+					"iLvl": "340",
+					"Type": "Waist",
+					"price": "6x Deltascape Datalog v1.0"
+				},
+				{
+					"name": "Genji Earrings of Healing ",
+					"iLvl": "340",
+					"Type": "Earrings",
+					"price": "4x Deltascape Datalog v1.0"
+				},
+				{
+					"name": "Genji Necklace of Healing",
+					"iLvl": "340",
+					"Type": "Necklace",
+					"price": "4x Deltascape Datalog v1.0"
+				},
+				{
+					"name": "Genji Bracelet of Healing",
+					"iLvl": "340",
+					"Type": "Bracelet",
+					"price": "4x Deltascape Datalog v1.0"
+				},
+				{
+					"name": "Genji Ring of Healing",
+					"iLvl": "340",
+					"Type": "Ring",
+					"price": "4x Deltascape Datalog v1.0"
+				},
+				{
+					"name": "Genji Ring of Healing",
+					"iLvl": "340",
+					"Type": "Ring",
+					"price": "4x Deltascape Datalog v1.0"
+				}
+			]
+		},
+		{
+			"name": "Ryu",
+			"job": "DRG",
+			"set": []
+		},
+		{
+			"name": "Pet",
+			"job": "NIN",
+			"set": []
+		},
+		{
+			"name": "Hash",
+			"job": "BRD",
+			"set": []
+		},
+		{
+			"name": "Jon",
+			"job": "SMN",
+			"set": []
+		}
+	],
+	"dungeon": [
+		{
+			"name": "O5S",
+			"drop": [
+				{
+					"name": "Ring",
+					"price": "4"
+				},
+				{
+					"name": "Bracelet",
+					"price": "4"
+				},
+				{
+					"name": "Necklace",
+					"price": "4"
+				},
+				{
+					"name": "Earing",
+					"price": "4"
+				},
+				{
+					"name": "Waist",
+					"price": "6"
+				}
+			]
+		},
+		{
+			"name": "O6S",
+			"drop": [
+				{
+					"name": "Hands",
+					"price": "6"
+				},
+				{
+					"name": "Feet",
+					"price": "6"
+				},
+				{
+					"name": "Head",
+					"price": "4"
+				},
+				{
+					"name": "Glaze",
+					"price": "4"
+				}
+			]
+		},
+		{
+			"name": "O7S",
+			"drop": [
+				{
+					"name": "Roborant",
+					"price": "4"
+				},
+				{
+					"name": "Twine",
+					"price": "4"
+				},
+				{
+					"name": "Legs",
+					"price": "8"
+				}
+			]
+		},
+		{
+			"name": "O8S",
+			"drop": [
+				{
+					"name": "Armor",
+					"price": "8"
+				},
+				{
+					"name": "Weapon",
+					"price": "8"
+				}
+			]
+		}
+	]
+	}
