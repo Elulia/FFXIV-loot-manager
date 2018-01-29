@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 var api = express.Router();
-app.use('/api/1.0', api);
+app.use('/1.0', api);
 
 var con = mysql.createConnection({
   host: "localhost", 
