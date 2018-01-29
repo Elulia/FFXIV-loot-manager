@@ -12,9 +12,9 @@ app.use(bodyParser.urlencoded({
 }));
 
 var con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
+  host: "localhost", 
+  user: "root", 
+  password: "", 
   database: "FFXIV"
 });
 
@@ -67,7 +67,7 @@ app.get('/instance', function (req, res) {
 });
 
 app.get('/class', function(req, res){
-    con.query('select * from class;', function(err,result){
+    con.query('select * from class;', function(err, result){
         if (err) throw err;
         res.send(result);
     })
@@ -76,11 +76,11 @@ app.get('/class', function(req, res){
 
 app.post('/set', function (req, res1) {
     console.log(req.body);
-    if(req.body == {}){
+    /*if(req.body == {}){
         res.status(400)
         res.send("put an ariyala link here please")
     }
-    else{
+    else{*/
         id='14B0G'
         http.get("http://ffxiv.ariyala.com/store.app?identifier="+id, function(res){
             res.on("data", function(data){
@@ -89,43 +89,44 @@ app.post('/set', function (req, res1) {
                 request({
                     header:{
                         'Content-Type' :"application/x-www-form-urlencoded"
-                    },
-                    uri: "http://ffxiv.ariyala.com/items.app",
-                    body: '{"queries":[{"items":['+items+']}],"existing":[]}',
+                    }, 
+                    uri: "http://ffxiv.ariyala.com/items.app", 
+                    body: '{"queries":[{"items":['+items+']}], "existing":[]}', 
                     method: 'POST'
-                },function(error,response,data){
+                }, function(error, response, data){
                     data = JSON.parse(data);
                     if(data.length==11 || data.length==12){
                         console.log('blu')
-                        con.query('select count(*) as nb from sets_list where id = ?;',[id] ,function(err, result){
+                        con.query('select count(*) as nb from sets_list where id = ?;', [id] , function(err, result){
                             if (err) throw err;
                             if (result[0].nb == 0) {
-                                con.query('insert into sets_list (id) values (?);',[id],function(err, result){
+                                con.query('insert into sets_list (id) values (?);', [id], function(err, result){
                                     if (err) throw err;
                                 });
                                 for (var i = data.length - 1; i >= 0; i--) {
                                     if(typeof data[i].source.purchase === typeof undefined){
-                                        dataSQL = [data[i].name.en,0,null,data[i].slot,data[i].source.drop.name]
+                                        dataSQL = [data[i].name.en, 0, null, data[i].slot, data[i].source.drop.name]
                                     }else if (typeof data[i].source.drop === typeof undefined){
-                                        dataSQL = [data[i].name.en,data[i].source.purchase[0].price[0][1].amount,data[i].source.purchase[0].price[0][1].item,data[i].slot,"purchase only"];
-                                        /*con.query('insert ignore into currency (name) values (?);',data[i].source.purchase[0].price[0][1].item,function(err,result){
-                                            if (err) throw err;
-                                        })*/
-                                    }else{
-                                        dataSQL = [data[i].name.en,data[i].source.purchase[0].price[0][0].amount,data[i].source.purchase[0].price[0][0].item,data[i].slot,data[i].source.drop.name];
-                                        /*con.query('insert ignore into currency (name) values (?);',data[i].source.purchase[0].price[0][0].item,function(err,result){
-                                            if (err) throw err;
-                                        })*/
-                                    }
-                                    /*if(typeof data[i].source.drop !== typeof undefined){
-                                        con.query('insert ignore into instance (name) values (?);',data[i].source.drop,function(err,result){
+                                        dataSQL = [data[i].name.en, data[i].source.purchase[0].price[0][1].amount, data[i].source.purchase[0].price[0][1].item, data[i].slot, "purchase only"];
+                                        con.query('insert ignore into currency (name) values (?);', [data[i].source.purchase[0].price[0][1].item], function(err, result){
                                             if (err) throw err;
                                         })
-                                    }*/
-                                    con.query('insert ignore into items (name, amount, currency, type, instance) values (?,?,?,?,?);',dataSQL,function(err,result){
+                                    }else{
+                                        dataSQL = [data[i].name.en, data[i].source.purchase[0].price[0][0].amount, data[i].source.purchase[0].price[0][0].item, data[i].slot, data[i].source.drop.name];
+                                        con.query('insert ignore into currency (name) values (?);', [data[i].source.purchase[0].price[0][0].item], function(err, result){
+                                            if (err) throw err;
+                                        })
+                                    }
+                                    if(typeof data[i].source.drop.name !== typeof undefined){
+                                        con.query('insert ignore into instance (name) values (?);', [data[i].source.drop.name], function(err, result){
+                                            if (err) throw err;
+                                        })
+                                    }
+
+                                    con.query('insert ignore into items (name, amount, currency, type, instance) values (?, ?, ?, ?, ?);', dataSQL, function(err, result){
                                         if (err) throw err;
                                     })
-                                    con.query('insert into sets (item_id, set_id) values (?,?);',[data[i].itemID,id], function(err, result){
+                                    con.query('insert into sets (item_id, set_id) values (?, ?);', [data[i].itemID, id], function(err, result){
                                         if (err) throw err;
                                     })
                                 }
@@ -139,7 +140,7 @@ app.post('/set', function (req, res1) {
                 })
             })          
         })
-    }
+    //}
     
 });
 
@@ -149,18 +150,18 @@ app.put('/set/:id', function (req, res) {
 });
 
 app.post('/team', function (req, res) {
-    con.query('select count(*) as nb from teams where name = ?;',[req.body.name] ,function(err, result){
+    con.query('select count(*) as nb from teams where name = ?;', [req.body.name] , function(err, result){
         if (err) throw err;
         if (result[0].nb == 0) {
-            con.query('insert into teams (name) values (?);',[req.body.name],function(err, result){
+            con.query('insert into teams (name) values (?);', [req.body.name], function(err, result){
                 if (err) throw err;
             });
-            con.query('select id from teams where name = ?;', [req.body.name],function(err, result){
+            con.query('select id from teams where name = ?;', [req.body.name], function(err, result){
                 if (err) throw err;
                 id = result[0].id
                 for (var j = req.body.player.length - 1; j >= 0; j--) {
                 var i=j
-                    con.query('insert into characters_teams (team_id, character_id, class) values (?, (select id from characters where name = ?), ?);',[id,req.body.player[i].name, req.body.player[i].class], function(err, result){
+                    con.query('insert into characters_teams (team_id, character_id, class) values (?, (select id from characters where name = ?), ?);', [id, req.body.player[i].name, req.body.player[i].class], function(err, result){
                         if(err) throw err;
                     });
                 }
@@ -177,7 +178,7 @@ app.post('/team', function (req, res) {
 });
 
 app.put('/team/:id', function (req, res) {
-  con.query('insert into characters_teams(team_id, character_id) values (?,(select id from characters where name = ?),?)',[id,req.body.player[0], req.body.player[1]],function(err, result){
+  con.query('insert into characters_teams(team_id, character_id) values (?, (select id from characters where name = ?), ?)', [id, req.body.player[0], req.body.player[1]], function(err, result){
     if(err) throw err;
     });
 });
@@ -188,10 +189,10 @@ app.post('/character', function (req, res) {
         res.send("name missing")
         return
     }
-    con.query('select count(*) as nb from characters where name = ?;',[req.body.name] ,function(err, result){
+    con.query('select count(*) as nb from characters where name = ?;', [req.body.name] , function(err, result){
         if (err) throw err;
         if(result[0].nb == 0){
-            con.query('insert into characters (name) values (?);',[req.body.name],function(err, result){
+            con.query('insert into characters (name) values (?);', [req.body.name], function(err, result){
                 if (err) throw err;
             });
             res.status(200)
@@ -205,10 +206,10 @@ app.post('/character', function (req, res) {
 });
 
 app.put('/character', function (req, res) {
-    con.query('select count(*) as nb from characters where name = ?;',[req.body.name] ,function(err, result){
+    con.query('select count(*) as nb from characters where name = ?;', [req.body.name] , function(err, result){
         if (err) throw err;
         if(result[0].nb == 0){
-            con.query('update characters set name=? where id = ?',[req.body.name,parseInt(req.body.id)], function(err,result){
+            con.query('update characters set name=? where id = ?', [req.body.name, parseInt(req.body.id)], function(err, result){
                 if(err) throw err;
                 res.status(200)
                 res.send("ok")
