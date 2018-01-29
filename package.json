@@ -1,0 +1,16 @@
+{
+  "name": "ffxiv-loot-manager",
+  "version": "1.0.0",
+  "description": "Loot manager",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elulia/ffxiv-loot-manager"
+  },
+  "author": "",
+  "license": "GPL v3"
+}
