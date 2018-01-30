@@ -10,6 +10,8 @@ app.use( bodyParser.json() );
 app.use(bodyParser.urlencoded({
   extended: true
 }));
+var api = express.Router();
+app.use('/1.0', api);
 
 var con = mysql.createConnection({
   host: "localhost", 
@@ -64,7 +66,7 @@ app.get('/fullteam/:id', function(req,res){
 
 
 
-app.get('/player/:id', function (req, res) {
+api.get('/player/:id', function (req, res) {
     var id = req.params.id;
     // TODO la requête n'a pas changée avec le modèle
     var sql = 'SELECT * FROM characters inner join characters_items on characters.id = characters_items.character_id inner join sets on characters_items.id = sets.character_item_id WHERE characters.id = ?;';
@@ -92,7 +94,7 @@ app.get('/set/:id', function (req, res) {
 
 });
 
-app.get('/team/:id', function (req, res) {
+api.get('/team/:id', function (req, res) {
     var id = req.params.id;
     var sql = 'SELECT * FROM characters_teams WHERE team_id = ? ;';
     con.query( sql, [id] , function (err, result) {
@@ -106,7 +108,7 @@ app.get('/team/:id', function (req, res) {
 
 });
 
-app.get('/instance', function (req, res) {
+api.get('/instance', function (req, res) {
     var sql = 'SELECT * FROM instance;';
     con.query( sql, function (err, result) {
         if (err) {
@@ -119,7 +121,7 @@ app.get('/instance', function (req, res) {
 });
 
 
-  app.get('/class', function(req, res){
+api.get('/class', function(req, res){
     con.query('select * from class;', function(err, result){
         if (err) {
             console.log(err);
@@ -131,8 +133,7 @@ app.get('/instance', function (req, res) {
 });
 
 
-
-  app.post('/set', function (req, res) {
+api.post('/set', function (req, res) {
     var char_id = 0;
     //TODO set char_id avec le champ name
     //select id from character where name=(?)
@@ -261,12 +262,12 @@ app.get('/instance', function (req, res) {
     res.status(200)
 });
 
-app.put('/set/:id', function (req, res) {
+api.put('/set/:id', function (req, res) {
 // ça fonctionne bien là
 
 });
 
-app.post('/team', function (req, res) {
+api.post('/team', function (req, res) {
     con.query('select count(*) as nb from teams where name = ?;', [req.body.name] , function(err, result){
         if (err) {
             console.log(err);
@@ -310,7 +311,7 @@ app.post('/team', function (req, res) {
 
 });
 
-app.put('/team/:id', function (req, res) {
+api.put('/team/:id', function (req, res) {
   con.query('insert into characters_teams(team_id, character_id) values (?, (select id from characters where name = ?), ?)', [id, req.body.player[0], req.body.player[1]], function(err, result){
         if(err) {
             console.log(err);
@@ -320,7 +321,7 @@ app.put('/team/:id', function (req, res) {
     });
 });
 
-app.post('/character', function (req, res) {
+api.post('/character', function (req, res) {
     if(typeof req.body.name === typeof undefined){
         res.status(400);
         res.send("name missing")
@@ -350,7 +351,7 @@ app.post('/character', function (req, res) {
     }); 
 });
 
-app.put('/character', function (req, res) {
+api.put('/character', function (req, res) {
     con.query('select count(*) as nb from characters where name = ?;', [req.body.name] , function(err, result){
         if (err) {
             console.log(err);
@@ -379,7 +380,7 @@ app.put('/character', function (req, res) {
 
 
 
-var server = app.listen(8081, function () {
+var server = app.listen(3210, function () {
 
     var host = server.address().address
     var port = server.address().port
