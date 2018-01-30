@@ -26,3 +26,28 @@ input[type=checkbox] {
 .roundedOne input[type=checkbox]:checked + label {
 	background: #66C5D5;
 }
+.head th{
+	background-color: #AAAAAA;
+}
+tr:nth-child(odd){
+	background-color: #E6E6E6;
+}
+tr:nth-child(odd):hover, .table tbody tr:hover{
+	background-color: rgba(175,210,215,0.5);
+}
+table tbody .head:hover, table tbody .head{
+	background-color: transparent;
+}
+#corner {
+	background-color: transparent;
+	border-top: none;
+	border-left: none;
+}
+table{
+	border: none;
+}
+table td, table tbody .head th{
+	border: 1px solid grey;
+}
+
+

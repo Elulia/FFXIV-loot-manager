@@ -9,7 +9,7 @@ $(function(){
 			sums:{test:'t'},
 		},
 		created:function(){
-			$.get("data.json", this.affiche)
+			$.get("http://localhost:8081/team", this.affiche)
 		},
 		methods:{
 			affiche: function(data){

@@ -24,7 +24,8 @@ $(function(){
 				$.post("http://localhost:8081/team")
 			},
 			newSet: function(){
-				$.post("http://localhost:8081/set", {link:$('#link').val()});
+				values = $('#link').val().split('/')
+				$.post("http://localhost:8081/set", {link:values[values.length-1]});
 			}
 		}
 	})
