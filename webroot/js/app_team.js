@@ -9,7 +9,33 @@ $(function(){
 			sums:{test:'t'},
 		},
 		created:function(){
-			$.get("http://localhost:8081/team", this.affiche)
+			tab = ["Deltascape O1S","Deltascape O2S","Deltascape O3S","Deltascape O4S"]
+			promises=[];
+			for (i in tab) {
+				promises.push(
+	                new Promise(function(resolve, reject) {
+						$.get("/api/1.0//instance/"+tab[i], function(data){
+							console.log(data);
+							resolve(data);
+						})
+					})
+				)
+			}
+	        team_promise = new Promise(function(resolve,reject){
+				$.get("/api/1.0/fullteam/37", function(data){
+					console.log(data);
+					resolve(data);
+				})
+			})
+			
+			Promise.all(promises).then(saves => {
+				team_promise.then(save => {
+		            save.dungeon = saves
+		            console.log(save)
+		            this.affiche(save)
+		        })
+			})
+			
 		},
 		methods:{
 			affiche: function(data){
@@ -28,7 +54,7 @@ $(function(){
 							for (drop_id in dungeon.drop){
 								drop= dungeon.drop[drop_id]
 								if (drop.name == item.Type) {
-									sum += parseInt(drop.price);
+									sum += parseInt(drop.amount);
 									concat.push(drop.name)
 								}
 							}

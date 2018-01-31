@@ -10,7 +10,7 @@ $(function(){
 					
 		},
 		created:function(){
-			$.get("http://localhost:8081/class", this.gotClass);
+			$.get("/api/1.0/class", this.gotClass);
 			
 		},
 		methods:{
@@ -21,11 +21,12 @@ $(function(){
 				this.players.push({name:"",class:""});
 			},
 			newTeam: function(){
-				$.post("http://localhost:8081/team")
+				$.post("/api/1.0/team")
+				return false
 			},
 			newSet: function(){
 				values = $('#link').val().split('/')
-				$.post("http://localhost:8081/set", {link:values[values.length-1]});
+				$.post("/api/1.0/set", {link:values[values.length-1]});
 			}
 		}
 	})

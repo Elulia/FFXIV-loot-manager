@@ -23,7 +23,7 @@ var con = mysql.createConnection({
 con.connect(function(err) {
   if (err) {
     console.log(err);
-    res.code(500);
+    res.status(500);
     res.send("MySQL error");
 }
 console.log("Connected!");
@@ -34,7 +34,7 @@ api.get('/fullteam/:id', function(req,res){
     con.query( 'SELECT name, class, set_id from characters_teams INNER JOIN characters ON characters_teams.character_id = characters.id WHERE team_id = ?', [req.params.id], function (err, result) {
         if (err) {
             console.log(err);
-            res.code(500);
+            res.status(500);
             res.send("MySQL error");
         }
 
@@ -42,17 +42,18 @@ api.get('/fullteam/:id', function(req,res){
         console.log("fetching")
 
         promises=[]
-        for (var i = result.length - 1; i >= 0; i--) {
+        for (var i =0; i< result.length; i++) {
             promises.push(
                 new Promise(function(resolve, reject) {
-                    con.query("SELECT name, amount, currency, type, instance FROM items inner join sets on items.id = sets.item_id where set_id = '14PF6'", function (err, set_result) {
+                    //TODO
+                    con.query("SELECT name, amount, currency, type, instance FROM items inner join sets on items.id = sets.item_id where set_id = ?",[result[i].set_id] ,function (err, set_result) {
                         resolve(set_result)
                     })
                 })
             )
         }
         Promise.all(promises).then(saves => {
-            for (var i = result.length - 1; i >= 0; i--) {
+            for (var i =0; i< result.length; i++) {
                 players.push({
                     "name" : result[i].name,
                     "job"  : result[i].class,
@@ -68,7 +69,7 @@ api.get('/teams/:player_id', function(req, res){
     con.query('select team_id,character_id,class,set_id,name from characters_teams inner join teams on characters_teams.team_id = teams.id where character_id = ?', [req.params.player_id], function(err, result){
         if (err) {
             console.log(err);
-            res.code(500);
+            res.status(500);
             res.send("MySQL error");
         }
         res.send(result)
@@ -77,14 +78,14 @@ api.get('/teams/:player_id', function(req, res){
 
 // TODO c'est beugué de ouf
 api.get('/instance/:name', function (req, res) {
-    name=req.params.name
-    con.query('select type, amount from items where instance=?',[name] , function (err, result) {
+    var names = req.params.name
+    con.query('select distinct type, amount from items where amount > 1 and instance=?',[names] , function (err, result) {
         if (err) {
             console.log(err);
-            res.code(500);
+            res.status(500);
             res.send("MySQL error");
         }  
-        str={"name": name,"drop":result}
+        str={"name": names,"drop":result}
         res.send(str);
     });
 })
@@ -96,7 +97,7 @@ api.get('/player/:id', function (req, res) {
     con.query( sql, [id] , function (err, result) {
         if (err) {
             console.log(err);
-            res.code(500);
+            res.status(500);
             res.send("MySQL error");
         }
         res.send(result);
@@ -109,7 +110,7 @@ api.get('/set/:id', function (req, res) {
     con.query( 'SELECT name, amount, currency, type, instance FROM items inner join sets on items.id = sets.item_id where set_id = ?;', [req.params.id] , function (err, result) {
         if (err) {
             console.log(err);
-            res.code(500);
+            res.status(500);
             res.send("MySQL error");
         }
         res.send(result);
@@ -123,7 +124,7 @@ api.get('/team/:id', function (req, res) {
     con.query( sql, [id] , function (err, result) {
         if (err) {
             console.log(err);
-            res.code(500);
+            res.status(500);
             res.send("MySQL error");
         }
         res.send(result);
@@ -136,7 +137,7 @@ api.get('/team/:id', function (req, res) {
     con.query( sql, function (err, result) {
         if (err) {
             console.log(err);
-            res.code(500);
+            res.status(500);
             res.send("MySQL error");
         }
         res.send(result);
@@ -148,7 +149,7 @@ api.get('/class', function(req, res){
     con.query('select * from class;', function(err, result){
         if (err) {
             console.log(err);
-            res.code(500);
+            res.status(500);
             res.send("MySQL error");
         }
         res.send(result);
@@ -162,7 +163,6 @@ api.post('/set', function (req, res) {
     //select id from character where name=(?)
     //si le nom existe pas : erreur pas d'insertion dans la bdd du tout (pop up voulez vous crée un mec ?)
     char_id = 1;
-    console.log(req.body);
     if(req.body == {} || typeof req.body.link === typeof undefined || req.body.link.length != 5){
         res.status(400)
         res.send("put a valid ariyala link here please")
@@ -170,7 +170,7 @@ api.post('/set', function (req, res) {
     else{
         id=req.body.link
         http.get("http://ffxiv.ariyala.com/store.app?identifier="+id, function(res1){
-            res.on("data", function(data){
+            res1.on("data", function(data){
                 truc = JSON.parse(data);
                 items = Object.values(truc.datasets[truc.content].normal.items);
                 request({
@@ -187,14 +187,14 @@ api.post('/set', function (req, res) {
                         con.query('select count(*) as nb from sets_list where id = ?;', [id] , function(err, result){
                             if (err) {
                                 console.log(err);
-                                res.code(500);
+                                res.status(500);
                                 res.send("MySQL error");
                             }
                             if(char_id != 0){
                                 con.query('insert into characters_sets (set_id, character_id) values (?,?)',[id,char_id], function(err, result){
                                     if (err) {
                                         console.log(err);
-                                        res.code(500);
+                                        res.status(500);
                                         res.send("MySQL error");
                                     }
                                 })
@@ -203,10 +203,11 @@ api.post('/set', function (req, res) {
                                 con.query('insert into sets_list (id) values (?);', [id], function(err, result){
                                     if (err) {
                                         console.log(err);
-                                        res.code(500);
+                                        res.status(500);
                                         res.send("MySQL error");
                                     }
                                 });
+    console.log(req.body);
                                 for (var i = data.length - 1; i >= 0; i--) {
                                     if(typeof data[i].source.crafting !== typeof undefined){
                                         stars = "";
@@ -219,11 +220,12 @@ api.post('/set', function (req, res) {
                                     else if(typeof data[i].source.purchase === typeof undefined){
                                         dataSQL = [data[i].name.en, 0, null, data[i].slot, data[i].source.drop.name]
                                     }else if (typeof data[i].source.drop === typeof undefined){
-                                        dataSQL = [data[i].name.en, data[i].source.purchase[0].price[0][1].amount, data[i].source.purchase[0].price[0][1].item, data[i].slot, "purchase only"];
-                                        con.query('insert ignore into currency (name) values (?);', [data[i].source.purchase[0].price[0][1].item], function(err, result){
+                                        console.log(data[i].source)
+                                        dataSQL = [data[i].name.en, data[i].source.purchase[0].price[0][0].amount, data[i].source.purchase[0].price[0][0].item, data[i].slot, "purchase only"];
+                                        con.query('insert ignore into currency (name) values (?);', [data[i].source.purchase[0].price[0][0].item], function(err, result){
                                             if (err) {
                                                 console.log(err);
-                                                res.code(500);
+                                                res.status(500);
                                                 res.send("MySQL error");
                                             }
                                         })
@@ -232,7 +234,7 @@ api.post('/set', function (req, res) {
                                         con.query('insert ignore into currency (name) values (?);', [data[i].source.purchase[0].price[0][0].item], function(err, result){
                                             if (err) {
                                                 console.log(err);
-                                                res.code(500);
+                                                res.status(500);
                                                 res.send("MySQL error");
                                             }
                                         })
@@ -241,7 +243,7 @@ api.post('/set', function (req, res) {
                                         con.query('insert ignore into instance (name) values (?);', [data[i].source.drop.name], function(err, result){
                                             if (err) {
                                                 console.log(err);
-                                                res.code(500);
+                                                res.status(500);
                                                 res.send("MySQL error");
                                             }
                                         })
@@ -250,14 +252,14 @@ api.post('/set', function (req, res) {
                                     con.query('insert ignore into items (name, amount, currency, type, instance, id) values (?, ?, ?, ?, ?, ?);', dataSQL, function(err, result){
                                         if (err) {
                                             console.log(err);
-                                            res.code(500);
+                                            res.status(500);
                                             res.send("MySQL error");
                                         }
                                     })
                                     con.query('insert into sets (item_id, set_id) values (?, ?);', [data[i].itemID, id], function(err, result){
                                         if (err) {
                                             console.log(err);
-                                            res.code(500);
+                                            res.status(500);
                                             res.send("MySQL error");
                                         }
                                     })
@@ -265,7 +267,7 @@ api.post('/set', function (req, res) {
                                         con.query('insert ignore into characters_items (item_id, character_id) values (?,?)',[data[i].itemID,char_id], function(err, result){
                                             if (err) {
                                                 console.log(err);
-                                                res.code(500);
+                                                res.status(500);
                                                 res.send("MySQL error");
                                             }
                                         })
@@ -294,21 +296,21 @@ api.post('/team', function (req, res) {
     con.query('select count(*) as nb from teams where name = ?;', [req.body.name] , function(err, result){
         if (err) {
             console.log(err);
-            res.code(500);
+            res.status(500);
             res.send("MySQL error");
         }
         if (result[0].nb == 0) {
             con.query('insert into teams (name) values (?);', [req.body.name], function(err, result){
                 if (err) {
                     console.log(err);
-                    res.code(500);
+                    res.status(500);
                     res.send("MySQL error");
                 }
             });
             con.query('select id from teams where name = ?;', [req.body.name], function(err, result){
                 if (err) {
                     console.log(err);
-                    res.code(500);
+                    res.status(500);
                     res.send("MySQL error");
                 }
                 id = result[0].id
@@ -317,7 +319,7 @@ api.post('/team', function (req, res) {
                     con.query('insert into characters_teams (team_id, character_id, class) values (?, (select id from characters where name = ?), ?);', [id, req.body.player[i].name, req.body.player[i].class], function(err, result){
                         if(err) {
                             console.log(err);
-                            res.code(500);
+                            res.status(500);
                             res.send("MySQL error");
                         }
                     });
@@ -338,7 +340,7 @@ api.put('/team/:id', function (req, res) {
   con.query('insert into characters_teams(team_id, character_id) values (?, (select id from characters where name = ?), ?)', [id, req.body.player[0], req.body.player[1]], function(err, result){
         if(err) {
             console.log(err);
-            res.code(500);
+            res.status(500);
             res.send("MySQL error");
         }
     });
@@ -353,14 +355,14 @@ api.post('/character', function (req, res) {
     con.query('select count(*) as nb from characters where name = ?;', [req.body.name] , function(err, result){
         if (err) {
             console.log(err);
-            res.code(500);
+            res.status(500);
             res.send("MySQL error");
         }
         if(result[0].nb == 0){
             con.query('insert into characters (name) values (?);', [req.body.name], function(err, result){
                 if (err) {
                     console.log(err);
-                    res.code(500);
+                    res.status(500);
                     res.send("MySQL error");
                 }
             });
@@ -378,14 +380,14 @@ api.put('/character', function (req, res) {
     con.query('select count(*) as nb from characters where name = ?;', [req.body.name] , function(err, result){
         if (err) {
             console.log(err);
-            res.code(500);
+            res.status(500);
             res.send("MySQL error");
         }
         if(result[0].nb == 0){
             con.query('update characters set name=? where id = ?', [req.body.name, parseInt(req.body.id)], function(err, result){
                 if(err) {
                     console.log(err);
-                    res.code(500);
+                    res.status(500);
                     res.send("MySQL error");
                 }
                 res.status(200)
