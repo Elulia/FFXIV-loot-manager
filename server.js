@@ -30,8 +30,8 @@ console.log("Connected!");
 });
 
 
-app.get('/fullteam/:id', function(req,res){
-    con.query( 'SELECT name, class, set_id from characters_teams INNER JOIN characters ON characters_teams.character_id = characters.id WHERE team_id = 37', function (err, result) {
+api.get('/fullteam/:id', function(req,res){
+    con.query( 'SELECT name, class, set_id from characters_teams INNER JOIN characters ON characters_teams.character_id = characters.id WHERE team_id = ?', [req.params.id], function (err, result) {
         if (err) {
             console.log(err);
             res.code(500);
@@ -59,12 +59,35 @@ app.get('/fullteam/:id', function(req,res){
                     "set"  : saves[i],
                 })
             }
-            res.send({team:players});
+            res.send(players);
         })
     })
 });
 
+api.get('/teams/:player_id', function(req, res){
+    con.query('select team_id,character_id,class,set_id,name from characters_teams inner join teams on characters_teams.team_id = teams.id where character_id = ?', [req.params.player_id], function(err, result){
+        if (err) {
+            console.log(err);
+            res.code(500);
+            res.send("MySQL error");
+        }
+        res.send(result)
+    })
+})
 
+// TODO c'est beugué de ouf
+api.get('/instance/:name', function (req, res) {
+    name=req.params.name
+    con.query('select type, amount from items where instance=?',[name] , function (err, result) {
+        if (err) {
+            console.log(err);
+            res.code(500);
+            res.send("MySQL error");
+        }  
+        str={"name": name,"drop":result}
+        res.send(str);
+    });
+})
 
 api.get('/player/:id', function (req, res) {
     var id = req.params.id;
@@ -82,7 +105,7 @@ api.get('/player/:id', function (req, res) {
 });
 
 //TODO il n'y a pas de set à tester
-app.get('/set/:id', function (req, res) {
+api.get('/set/:id', function (req, res) {
     con.query( 'SELECT name, amount, currency, type, instance FROM items inner join sets on items.id = sets.item_id where set_id = ?;', [req.params.id] , function (err, result) {
         if (err) {
             console.log(err);
@@ -108,7 +131,7 @@ api.get('/team/:id', function (req, res) {
 
 });
 
-api.get('/instance', function (req, res) {
+/*api.get('/instance', function (req, res) {
     var sql = 'SELECT * FROM instance;';
     con.query( sql, function (err, result) {
         if (err) {
@@ -118,7 +141,7 @@ api.get('/instance', function (req, res) {
         }
         res.send(result);
     });
-});
+});*/
 
 
 api.get('/class', function(req, res){
