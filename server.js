@@ -23,8 +23,6 @@ var con = mysql.createConnection({
 con.connect(function(err) {
   if (err) {
     console.log(err);
-    res.status(500);
-    res.send("MySQL error");
 }
 console.log("Connected!");
 });
@@ -52,7 +50,7 @@ api.get('/fullteam/:id', function(req,res){
                 })
             )
         }
-        Promise.all(promises).then(saves => {
+        Promise.all(promises).then(function (saves)  {
             for (var i =0; i< result.length; i++) {
                 players.push({
                     "name" : result[i].name,
