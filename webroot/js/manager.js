@@ -45,33 +45,52 @@ $(function(){
 				this.getSets(id).then(_ => {
 					this.d.sums = []
 					this.page = this.pages.team
-					this.title = 'Team '+ id
+					this.title = this.teams[team_id].name
+					this.colspan = [2,3,3,2]
 
+					currency_list = ["Ryumyaku Polish","Ryumyaku Weave","Ryumyaku Solvent"]
 					// TODO les sommes ne fonctionnent pas
 					for (mate_id in this.d.team){
 						mate=this.d.team[mate_id]
-
 						i=0
-						this.d.sums[mate.name]=[]
+						var glaze = 0
+						var twine = 0
+						this.d.sums[mate.name]=[0,"",0,"",0,"",0,""]
 						for (dungeon_id in this.d.dungeon){
 							dungeon= this.d.dungeon[dungeon_id]
 							sum=0
 							concat=[]
 							for (item_id in mate.set){
-								item=mate.set[item_id]
-								console.log(item)
-								for (drop_id in dungeon.drop){
-									drop= dungeon.drop[drop_id]
-									if (drop.type == item.type && item.name.match(/.*Diamond.*/i)) {
-										sum += drop.amount;
-										concat.push(drop.type)
+								//if(item.status != true){
+									item=mate.set[item_id]
+									console.log(item.currency)
+										if (item.currency == currency_list[0]){
+											this.d.sums[mate.name][2] += 1;
+											glaze+=1
+										}
+										if (item.currency == currency_list[1]){
+											this.d.sums[mate.name][4] += 1;
+											twine+=1
+										}
+										if (item.currency == currency_list[2]){
+											this.d.sums[mate.name][4] += 1;
+										}
+
+									for (drop_id in dungeon.drop){
+										drop= dungeon.drop[drop_id]
+										if (drop.type == item.type && item.name.match(/.*Diamond.*/i)) {
+											sum += drop.amount;
+											concat.push(drop.type)
+										}
 									}
-								}
+								//}
 							}
-							this.d.sums[mate.name][i] = sum
+							this.d.sums[mate.name][i] += sum
 							this.d.sums[mate.name][i+1] = concat.join(", ");
 							i+=2
 						}
+						this.d.sums[mate.name].splice(4,0,(glaze/4))
+						this.d.sums[mate.name].splice(7,0,(twine/4))
 					}
 					console.log(this.d.sums)
 				})
@@ -124,6 +143,19 @@ $(function(){
 				        this.d.dungeon = saves
 					})
 				})				
+			},
+			sendOwned: function(){
+				if (e.preventDefault) e.preventDefault()
+				var owned = {}
+				for (i in this.d.items){
+					owned[i] = $("#"+i).value()
+				}
+				console.log("Ready to send : "+owned);
+				$.put('/api/1.0/set', owned, function(data){
+					
+				})
+
+				return false
 			},
 
 			/* Data contruction functions */

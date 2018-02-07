@@ -182,7 +182,7 @@ api.post('/set', function (req, res) {
                     method: 'POST'
                 }, function(error, response, data){
                     data = JSON.parse(data);
-                    if(data.length==11 || data.length==12){
+                    if(data.length==11 || data.length==12 || data.length==13){
                         console.log('blu')
                         con.query('select count(*) as nb from sets_list where id = ?;', [id] , function(err, result){
                             if (err) {
@@ -207,7 +207,7 @@ api.post('/set', function (req, res) {
                                         res.send("MySQL error");
                                     }
                                 });
-    console.log(req.body);
+    console.log(req.body); //JE TAIME TELLEMENT FORT QUE CA FAIT PLANTER TON CODE !!!!!!!
                                 for (var i = data.length - 1; i >= 0; i--) {
                                     if(typeof data[i].source.crafting !== typeof undefined){
                                         stars = "";
@@ -221,8 +221,10 @@ api.post('/set', function (req, res) {
                                         dataSQL = [data[i].name.en, 0, null, data[i].slot, data[i].source.drop.name]
                                     }else if (typeof data[i].source.drop === typeof undefined){
                                         console.log(data[i].source)
-                                        dataSQL = [data[i].name.en, data[i].source.purchase[0].price[0][0].amount, data[i].source.purchase[0].price[0][0].item, data[i].slot, "purchase only"];
-                                        con.query('insert ignore into currency (name) values (?);', [data[i].source.purchase[0].price[0][0].item], function(err, result){
+                                        dt=data[i].source.purchase[0].price[0]
+                                        console.log(dt.length)
+                                        dataSQL = [data[i].name.en, dt[(dt.length-1)].amount, dt[(dt.length-1)].item, data[i].slot, "purchase only"];
+                                        con.query('insert ignore into currency (name) values (?);', [dt[dt.length-1].item], function(err, result){
                                             if (err) {
                                                 console.log(err);
                                                 res.status(500);
@@ -230,8 +232,9 @@ api.post('/set', function (req, res) {
                                             }
                                         })
                                     }else{
-                                        dataSQL = [data[i].name.en, data[i].source.purchase[0].price[0][0].amount, data[i].source.purchase[0].price[0][0].item, data[i].slot, data[i].source.drop.name];
-                                        con.query('insert ignore into currency (name) values (?);', [data[i].source.purchase[0].price[0][0].item], function(err, result){
+                                        dt=data[i].source.purchase[0].price[0]
+                                        dataSQL = [data[i].name.en, dt[dt.length-1].amount, dt[dt.length-1].item, data[i].slot, data[i].source.drop.name];
+                                        con.query('insert ignore into currency (name) values (?);', [dt[dt.length-1].item], function(err, result){
                                             if (err) {
                                                 console.log(err);
                                                 res.status(500);
@@ -275,10 +278,11 @@ api.post('/set', function (req, res) {
                                 }
                             }
                         })
+                        res.status(200)
                     }
                     else{
-                        res1.status(400)
-                        res1.send("set pas complet");
+                        res.status(400)
+                        res.send("set pas complet");
                     }
                 })
             })          

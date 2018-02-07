@@ -44,8 +44,12 @@
 						<th>Action</th>
 					</tr>
 					<tr v-for="(item,i) in d.items">
-						<td>{{ item.name }}</td>
-						<td>{{ item.price }}</td>
+						<td>
+							{{ item.name }}
+						</td>
+						<td>
+							{{ item.price }}
+						</td>
 						<td>
 							<div class="roundedOne">
 								<input type="checkbox" v-bind:id="i" v-bind:name="i" />
@@ -54,8 +58,7 @@
 						</td>
 					</tr>
 				</table>
-				<!-- TODO envoi formulaire -->
-				<input type="submit" name=""> 
+				<input v-on:click="sendOwned" type="submit" name=""> 
 			</form>
 		</section>
 
@@ -63,14 +66,19 @@
 			<table class="table table-hover">
 				<tr class="nosel head">
 					<th colspan="2" rowspan="2" id="corner"></th>
-					<th v-for="dungeon in d.dungeon" colspan="2">{{ dungeon.name }}</th>
+					<th v-for="(dungeon,i) in d.dungeon" v-bind:colspan="colspan[i]">{{ dungeon.name }}</th>
 				</tr>
 				<tr class="head">
-					<template v-for="dungeon in d.dungeon">
-						<td>Tokens</td>
-						<td>Genji-Drops</td>
-					</template>
-				
+					<td>Tokens</td>
+					<td>Genji-Drops</td>
+					<td>Tokens</td>
+					<td>Genji-Drops</td>
+					<td>Glaze</td>
+					<td>Tokens</td>
+					<td>Genji-Drops</td>
+					<td>Twine</td>
+					<td>Tokens</td>
+					<td>Genji-Drops</td>
 				</tr>
 				<tr v-for="mate in d.team">
 					<td>

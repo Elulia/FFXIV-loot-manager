@@ -21,7 +21,7 @@ $(function(){
 				this.players.push({name:"",class:""});
 			},
 			newTeam: function(){
-				$.post("/api/1.0/team")
+				$.post("/api/1.0/team", this.data)
 				return false
 			},
 			newSet: function(){
