@@ -27,6 +27,11 @@ con.connect(function(err) {
   console.log("Connected!");
 });
 
+// A very dirty way to prevent mysql deconnections.
+// TODO write a clean handler
+setInterval(function () {
+    db.query('SELECT 1');
+}, 5000);
 
 api.get('/fullteam/:id', function(req,res){
   con.query( 'SELECT name, class, set_id from characters_teams INNER JOIN characters ON characters_teams.character_id = characters.id WHERE team_id = ?', [req.params.id], function (err, result) {
