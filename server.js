@@ -30,7 +30,7 @@ con.connect(function(err) {
 // A very dirty way to prevent mysql deconnections.
 // TODO write a clean handler
 setInterval(function () {
-    db.query('SELECT 1');
+    con.query('SELECT 1');
 }, 5000);
 
 api.get('/fullteam/:id', function(req,res){
