@@ -25,6 +25,7 @@ $(function(){
 			pages: {index:'index', mate:'mate', team:'team', sets:'sets'},
 			page: '',
 			title: '',
+			team_id:-1,
 			d: {},
 		},
 		created:function(){
@@ -37,6 +38,7 @@ $(function(){
 		methods:{
 			/* Navigation functions */
 			goTeam: function(id){
+				this.team_id=id;
 				if(id == -1){
 					this.goIndex();
 					return;
@@ -171,6 +173,15 @@ $(function(){
 				]
 
 			},
+			newSet: function(id){
+				link = window.prompt('lien ariyala :')
+				console.log([id,40,link])
+				if(link != null){
+					values = link.split('/')
+					console.log('blu')
+					$.post("/api/1.0/set", {'id':id,'team_id':40,'link':values[values.length-1]});
+				}
+			}
 		}
 	})
 });

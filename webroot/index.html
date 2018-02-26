@@ -78,7 +78,7 @@
 					<td>Genji-Drops</td>
 					<td>Twine</td>
 					<td>Tokens</td>
-					<td>Genji-Drops</td>
+					<td>Genji-Drops</td>	
 				</tr>
 				<tr v-for="mate in d.team">
 					<td>
@@ -89,6 +89,9 @@
 					</td>
 					<td v-for="sum in d.sums[mate.name]">
 						{{ sum }}
+					</td>
+					<td class="button_link">
+						<button v-on:click="newSet(mate.id)">link</button>
 					</td>
 				</tr>
 			</table>

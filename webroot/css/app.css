@@ -29,10 +29,10 @@ input[type=checkbox] {
 .head th{
 	background-color: #AAAAAA;
 }
-tr:nth-child(odd){
+tr:nth-child(odd) td{
 	background-color: #E6E6E6;
 }
-tr:nth-child(odd):hover, .table tbody tr:hover{
+tr:nth-child(odd):hover td, .table tbody tr:hover td{
 	background-color: rgba(175,210,215,0.5);
 }
 table tbody .head:hover, table tbody .head{
@@ -50,4 +50,14 @@ table td, table tbody .head th{
 	border: 1px solid grey;
 }
 
-
+.table tbody tr .button_link, .table tbody tr .button_link:hover {
+	background-color: transparent;
+	padding: 5px;
+	margin: 0;
+	border-top:none;
+	border-right:none;
+	border-bottom: none;
+	width: 1%;
+	white-space: nowrap;
+	vertical-align: middle;
+}
