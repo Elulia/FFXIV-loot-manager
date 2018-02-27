@@ -223,6 +223,7 @@ api.post('/set', function (req, res) {
                         })
                         character_set(req.body.id, req.body.link, data, req.body.team_id)
                         res.status(200)
+                        res.send('ok')
                     }
                     else{
                         res.status(400)
