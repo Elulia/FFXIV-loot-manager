@@ -180,7 +180,21 @@ api.post('/set', function (req, res) {
     else{
         id=req.body.link
         http.get("http://ffxiv.ariyala.com/store.app?identifier="+id, function(res1){
-            res1.on("data", function(data){
+          const { statusCode } = res1;
+          const contentType = res1.headers['content-type'];
+          if (statusCode !== 200){
+            res.status(500)
+            res.send("aryala failed to answer")
+            res1.resume();
+          }else if (!/^application\/json/.test(contentType)) {
+            res.status(500)
+            res.send("aryala didn’t send json !")
+            res1.resume();
+          }
+          res1.setEncoding('utf8');
+          let rawData = '';
+          res1.on('data', (chunk) => { rawData += chunk; });
+            res1.on("end", function(data){
                 truc = JSON.parse(data);
                 items = Object.values(truc.datasets[truc.content].normal.items);
                 request({
