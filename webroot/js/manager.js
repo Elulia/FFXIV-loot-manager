@@ -25,6 +25,8 @@ $(function(){
 			pages: {index:'index', mate:'mate', team:'team', sets:'sets'},
 			page: '',
 			title: '',
+			team_id:-1,
+			char_id:-1,
 			d: {},
 		},
 		created:function(){
@@ -37,6 +39,7 @@ $(function(){
 		methods:{
 			/* Navigation functions */
 			goTeam: function(id){
+				this.team_id=id;
 				if(id == -1){
 					this.goIndex();
 					return;
@@ -61,9 +64,8 @@ $(function(){
 							sum=0
 							concat=[]
 							for (item_id in mate.set){
-								//if(item.status != true){
-									item=mate.set[item_id]
-									console.log(item.currency)
+								item=mate.set[item_id]
+								if(item.status != true){
 										if (item.currency == currency_list[0]){
 											this.d.sums[mate.name][2] += 1;
 											glaze+=1
@@ -83,7 +85,7 @@ $(function(){
 											concat.push(drop.type)
 										}
 									}
-								//}
+								}
 							}
 							this.d.sums[mate.name][i] += sum
 							this.d.sums[mate.name][i+1] = concat.join(", ");
@@ -92,7 +94,6 @@ $(function(){
 						this.d.sums[mate.name].splice(4,0,(glaze/4))
 						this.d.sums[mate.name].splice(7,0,(twine/4))
 					}
-					console.log(this.d.sums)
 				})
 			},
 			goIndex: function(){
@@ -109,9 +110,21 @@ $(function(){
 				for (mate_id in this.d.team){
 					mate=this.d.team[mate_id]
 					if(mate.name==playerName){
-						this.d.items=mate.set
+						for (var i = mate.set.length - 1; i >= 0; i--) {
+							mate.set[i].type
+						}
+						this.d.items=mate.set.sort(function(item1,item2){
+							tab={"chest":2, "ears":7, "feet":6, "hands":3, "head":1, "legs":5, "mainhand":0, "neck":8, "ring":10, "waist":4, "wrist":9, "food":11}
+							return (tab[item1.type]-tab[item2.type])
+						})
+						this.char_id = mate.id
 					}
 				}
+
+			},
+			sortItem: function(item1,item2){
+				tab={"chest":2, "ears":7, "feet":6, "hands":3, "head":1, "legs":5, "mainhand":0, "neck":8, "ring":10, "waist":4, "wrist":9}
+				return (tab[item1.type]-tab[item2.type])
 			},
 
 			/* Data fetch functions */
@@ -171,6 +184,21 @@ $(function(){
 				]
 
 			},
+			newSet: function(id){
+				link = window.prompt('lien ariyala :')
+				console.log([id,this.team_id,link])
+				if(link != null){
+					values = link.split('/')
+					$.post("/api/1.0/set", {'id':id,'team_id':this.team_id,'link':values[values.length-1]}, data=>{
+						console.log('blue')
+						goTeam(this.team_id)
+					});
+				}
+
+			},
+			changeStatus: function(char_id, item_id, item_status){
+				$.post("/api/1.0/character/item", {'char_id':char_id, 'item_id':item_id, 'item_status':((item_status == 0) ? 1 : 0)})
+			}
 		}
 	})
 });

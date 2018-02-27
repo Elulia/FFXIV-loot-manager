@@ -38,7 +38,7 @@
 		<section v-if="page == 'sets'">
 			<form>
 				<table class="table table-bordered table-hover">
-					<tr class="nosel">
+					<tr class="nosel head">
 						<th>Name</th>
 						<th>Price</th>
 						<th>Action</th>
@@ -52,13 +52,12 @@
 						</td>
 						<td>
 							<div class="roundedOne">
-								<input type="checkbox" v-bind:id="i" v-bind:name="i" />
+								<input type="checkbox" v-bind:id="i" v-bind:name="i" v-model="item.status" v-on:click="changeStatus(char_id, item.id, item.status)"/>
 								<label v-bind:for="i"></label>
 							</div>
 						</td>
 					</tr>
 				</table>
-				<input v-on:click="sendOwned" type="submit" name=""> 
 			</form>
 		</section>
 
@@ -78,7 +77,7 @@
 					<td>Genji-Drops</td>
 					<td>Twine</td>
 					<td>Tokens</td>
-					<td>Genji-Drops</td>
+					<td>Genji-Drops</td>	
 				</tr>
 				<tr v-for="mate in d.team">
 					<td>
@@ -89,6 +88,9 @@
 					</td>
 					<td v-for="sum in d.sums[mate.name]">
 						{{ sum }}
+					</td>
+					<td class="button_link">
+						<button v-on:click="newSet(mate.id)">link</button>
 					</td>
 				</tr>
 			</table>

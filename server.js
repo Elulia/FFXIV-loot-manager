@@ -20,6 +20,15 @@ var con = mysql.createConnection({
   database: process.env.MYSQL_DB || "FFXIV"
 });
 
+function err500(err){
+    if (err) {
+        console.log(err);
+        res.status(500);
+        res.send("MySQL error");
+        return;
+    }
+}
+
 con.connect(function(err) {
   if (err) {
     console.log(err);
@@ -34,13 +43,8 @@ setInterval(function () {
 }, 5000);
 
 api.get('/fullteam/:id', function(req,res){
-  con.query( 'SELECT name, class, set_id from characters_teams INNER JOIN characters ON characters_teams.character_id = characters.id WHERE team_id = ?', [req.params.id], function (err, result) {
-    if (err) {
-      console.log(err);
-      res.status(500);
-      res.send("MySQL error");
-      return;
-    }
+  con.query( 'SELECT name,characters.id as char_id, class, set_id from characters_teams INNER JOIN characters ON characters_teams.character_id = characters.id WHERE team_id = ?', [req.params.id], function (err, result) {
+    err500(err)
 
     players = []
 
@@ -49,7 +53,8 @@ api.get('/fullteam/:id', function(req,res){
       promises.push(
         new Promise(function(resolve, reject) {
           //TODO
-          con.query("SELECT name, amount, currency, type, instance FROM items inner join sets on items.id = sets.item_id where set_id = ?",[result[i].set_id] ,function (err, set_result) {
+          con.query("SELECT name, amount, currency, type, instance, owned as status, items.id FROM items inner join sets on items.id = sets.item_id inner join characters_items on items.id = characters_items.item_id where set_id = ? and characters_items.character_id=?",[result[i].set_id, result[i].char_id] ,function (err, set_result) {
+            
             resolve(set_result)
           })
         })
@@ -61,6 +66,7 @@ api.get('/fullteam/:id', function(req,res){
           "name" : result[i].name,
           "job"  : result[i].class,
           "set"  : saves[i],
+          "id" : result[i].char_id
         })
       }
       res.send(players);
@@ -70,12 +76,7 @@ api.get('/fullteam/:id', function(req,res){
 
 api.get('/teams/:player_id', function(req, res){
   con.query('select team_id,character_id,class,set_id,name from characters_teams inner join teams on characters_teams.team_id = teams.id where character_id = ?', [req.params.player_id], function(err, result){
-    if (err) {
-      console.log(err);
-      res.status(500);
-      res.send("MySQL error");
-      return;
-    }
+    err500(err)
     res.send(result)
   })
 })
@@ -84,12 +85,7 @@ api.get('/teams/:player_id', function(req, res){
 api.get('/instance/:name', function (req, res) {
   var names = req.params.name
   con.query('select distinct type, amount from items where amount > 1 and instance=?',[names] , function (err, result) {
-    if (err) {
-      console.log(err);
-      res.status(500);
-      res.send("MySQL error");
-      return;
-    }  
+    err500(err)
     str={"name": names,"drop":result}
     res.send(str);
   });
@@ -100,12 +96,7 @@ api.get('/player/:id', function (req, res) {
   // TODO la requête n'a pas changée avec le modèle
   var sql = 'SELECT * FROM characters inner join characters_items on characters.id = characters_items.character_id inner join sets on characters_items.id = sets.character_item_id WHERE characters.id = ?;';
   con.query( sql, [id] , function (err, result) {
-    if (err) {
-      console.log(err);
-      res.status(500);
-      res.send("MySQL error");
-      return;
-    }
+    err500(err)
     res.send(result);
   });
 
@@ -114,12 +105,7 @@ api.get('/player/:id', function (req, res) {
 //TODO il n'y a pas de set à tester
 api.get('/set/:id', function (req, res) {
   con.query( 'SELECT name, amount, currency, type, instance FROM items inner join sets on items.id = sets.item_id where set_id = ?;', [req.params.id] , function (err, result) {
-    if (err) {
-      console.log(err);
-      res.status(500);
-      res.send("MySQL error");
-      return;
-    }
+    err500(err)
     res.send(result);
   });
 
@@ -129,12 +115,7 @@ api.get('/team/:id', function (req, res) {
   var id = req.params.id;
   var sql = 'SELECT * FROM characters_teams WHERE team_id = ? ;';
   con.query( sql, [id] , function (err, result) {
-    if (err) {
-      console.log(err);
-      res.status(500);
-      res.send("MySQL error");
-      return;
-    }
+    err500(err)
     res.send(result);
   });
 
@@ -143,12 +124,7 @@ api.get('/team/:id', function (req, res) {
 /*api.get('/instance', function (req, res) {
     var sql = 'SELECT * FROM instance;';
     con.query( sql, function (err, result) {
-        if (err) {
-            console.log(err);
-            res.status(500);
-            res.send("MySQL error");
-return;
-        }
+        err500(err)
         res.send(result);
     });
 });*/
@@ -156,12 +132,7 @@ return;
 
 api.get('/class', function(req, res){
   con.query('select * from class;', function(err, result){
-    if (err) {
-      console.log(err);
-      res.status(500);
-      res.send("MySQL error");
-      return;
-    }
+    err500(err)
     res.send(result);
   })
 });
@@ -207,31 +178,13 @@ api.post('/set', function (req, res) {
                 }, function(error, response, data){
                     data = JSON.parse(data);
                     if(data.length==11 || data.length==12 || data.length==13){
-                        console.log('blu')
                         con.query('select count(*) as nb from sets_list where id = ?;', [id] , function(err, result){
-                            if (err) {
-                                console.log(err);
-                                res.status(500);
-                                res.send("MySQL error");
-                            }
-                            if(char_id != 0){
-                                con.query('insert into characters_sets (set_id, character_id) values (?,?)',[id,char_id], function(err, result){
-                                    if (err) {
-                                        console.log(err);
-                                        res.status(500);
-                                        res.send("MySQL error");
-                                    }
-                                })
-                            }
+                            err500(err)
                             if (result[0].nb == 0) {
                                 con.query('insert into sets_list (id) values (?);', [id], function(err, result){
-                                    if (err) {
-                                        console.log(err);
-                                        res.status(500);
-                                        res.send("MySQL error");
-                                    }
+                                    err500(err)
                                 });
-    console.log(req.body); //JE TAIME TELLEMENT FORT QUE CA FAIT PLANTER TON CODE !!!!!!!
+                                //JE TAIME TELLEMENT FORT QUE CA FAIT PLANTER TON CODE !!!!!!!
                                 for (var i = data.length - 1; i >= 0; i--) {
                                     if(typeof data[i].source.crafting !== typeof undefined){
                                         stars = "";
@@ -244,64 +197,34 @@ api.post('/set', function (req, res) {
                                     else if(typeof data[i].source.purchase === typeof undefined){
                                         dataSQL = [data[i].name.en, 0, null, data[i].slot, data[i].source.drop.name]
                                     }else if (typeof data[i].source.drop === typeof undefined){
-                                        console.log(data[i].source)
                                         dt=data[i].source.purchase[0].price[0]
-                                        console.log(dt.length)
                                         dataSQL = [data[i].name.en, dt[(dt.length-1)].amount, dt[(dt.length-1)].item, data[i].slot, "purchase only"];
                                         con.query('insert ignore into currency (name) values (?);', [dt[dt.length-1].item], function(err, result){
-                                            if (err) {
-                                                console.log(err);
-                                                res.status(500);
-                                                res.send("MySQL error");
-                                            }
+                                            err500(err)
                                         })
                                     }else{
                                         dt=data[i].source.purchase[0].price[0]
                                         dataSQL = [data[i].name.en, dt[dt.length-1].amount, dt[dt.length-1].item, data[i].slot, data[i].source.drop.name];
                                         con.query('insert ignore into currency (name) values (?);', [dt[dt.length-1].item], function(err, result){
-                                            if (err) {
-                                                console.log(err);
-                                                res.status(500);
-                                                res.send("MySQL error");
-                                            }
+                                            err500(err)
                                         })
                                     }
                                     if(typeof data[i].source.drop !== typeof undefined){
                                         con.query('insert ignore into instance (name) values (?);', [data[i].source.drop.name], function(err, result){
-                                            if (err) {
-                                                console.log(err);
-                                                res.status(500);
-                                                res.send("MySQL error");
-                                            }
+                                            err500(err)
                                         })
                                     }
                                     dataSQL.push(data[i].itemID);
                                     con.query('insert ignore into items (name, amount, currency, type, instance, id) values (?, ?, ?, ?, ?, ?);', dataSQL, function(err, result){
-                                        if (err) {
-                                            console.log(err);
-                                            res.status(500);
-                                            res.send("MySQL error");
-                                        }
+                                        err500(err)
                                     })
                                     con.query('insert into sets (item_id, set_id) values (?, ?);', [data[i].itemID, id], function(err, result){
-                                        if (err) {
-                                            console.log(err);
-                                            res.status(500);
-                                            res.send("MySQL error");
-                                        }
+                                       err500(err)
                                     })
-                                    if (char_id != 0) {
-                                        con.query('insert ignore into characters_items (item_id, character_id) values (?,?)',[data[i].itemID,char_id], function(err, result){
-                                            if (err) {
-                                                console.log(err);
-                                                res.status(500);
-                                                res.send("MySQL error");
-                                            }
-                                        })
-                                    }
                                 }
                             }
                         })
+                        character_set(req.body.id, req.body.link, data, req.body.team_id)
                         res.status(200)
                     }
                     else{
@@ -311,9 +234,26 @@ api.post('/set', function (req, res) {
                 })
             })          
         })
+        res.status(200)
     }
     res.status(200)
 });
+
+
+function character_set(id, set_id, items, team_id){
+    con.query('insert ignore into characters_sets(character_id,set_id) values(?,?)',[id, set_id], function(err, result){
+        err500(err)
+    })
+    con.query('update characters_teams set set_id = ? WHERE character_id = ? and team_id = ?',[set_id, id, team_id], function(err, result){
+        err500(err)
+    })
+    for (var i = items.length - 1; i >= 0; i--) {
+        con.query('insert ignore into characters_items(character_id,item_id) values(?,?)',[id, items[i].itemID], function(err, result){
+            err500(err)
+        })
+    }
+
+}
 
 api.put('/set/:id', function (req, res) {
   // ça fonctionne bien là
@@ -322,38 +262,18 @@ api.put('/set/:id', function (req, res) {
 
 api.post('/team', function (req, res) {
   con.query('select count(*) as nb from teams where name = ?;', [req.body.name] , function(err, result){
-    if (err) {
-      console.log(err);
-      res.status(500);
-      res.send("MySQL error");
-      return;
-    }
+    err500(err)
     if (result[0].nb == 0) {
       con.query('insert into teams (name) values (?);', [req.body.name], function(err, result){
-        if (err) {
-          console.log(err);
-          res.status(500);
-          res.send("MySQL error");
-          return;
-        }
+        err500(err)
       });
       con.query('select id from teams where name = ?;', [req.body.name], function(err, result){
-        if (err) {
-          console.log(err);
-          res.status(500);
-          res.send("MySQL error");
-          return;
-        }
+        err500(err)
         id = result[0].id
         for (var j = req.body.player.length - 1; j >= 0; j--) {
           var i=j
           con.query('insert into characters_teams (team_id, character_id, class) values (?, (select id from characters where name = ?), ?);', [id, req.body.player[i].name, req.body.player[i].class], function(err, result){
-            if(err) {
-              console.log(err);
-              res.status(500);
-              res.send("MySQL error");
-              return;
-            }
+            err500(err)
           });
         }
         res.status(200)
@@ -370,12 +290,7 @@ api.post('/team', function (req, res) {
 
 api.put('/team/:id', function (req, res) {
   con.query('insert into characters_teams(team_id, character_id) values (?, (select id from characters where name = ?), ?)', [id, req.body.player[0], req.body.player[1]], function(err, result){
-    if(err) {
-      console.log(err);
-      res.status(500);
-      res.send("MySQL error");
-      return;
-    }
+    err500(err)
   });
 });
 
@@ -386,20 +301,10 @@ api.post('/character', function (req, res) {
     return
   }
   con.query('select count(*) as nb from characters where name = ?;', [req.body.name] , function(err, result){
-    if (err) {
-      console.log(err);
-      res.status(500);
-      res.send("MySQL error");
-      return;
-    }
+    err500(err)
     if(result[0].nb == 0){
       con.query('insert into characters (name) values (?);', [req.body.name], function(err, result){
-        if (err) {
-          console.log(err);
-          res.status(500);
-          res.send("MySQL error");
-          return;
-        }
+        err500(err)
       });
       res.status(200)
       res.send("OK")
@@ -413,20 +318,10 @@ api.post('/character', function (req, res) {
 
 api.put('/character', function (req, res) {
   con.query('select count(*) as nb from characters where name = ?;', [req.body.name] , function(err, result){
-    if (err) {
-      console.log(err);
-      res.status(500);
-      res.send("MySQL error");
-      return;
-    }
+    err500(err)
     if(result[0].nb == 0){
       con.query('update characters set name=? where id = ?', [req.body.name, parseInt(req.body.id)], function(err, result){
-        if(err) {
-          console.log(err);
-          res.status(500);
-          res.send("MySQL error");
-          return;
-        }
+        err500(err)
         res.status(200)
         res.send("ok")
       })
@@ -437,15 +332,27 @@ api.put('/character', function (req, res) {
   });
 });
 
-
-
-
-
-
-var server = app.listen(8080, function () {
-
-  var host = server.address().address
-  var port = server.address().port
-  console.log("Listening at http://%s:%s", host, port)
-
+api.post('/character/item', function(req,res){
+    console.log(req.body)
+    con.query('update characters_items set owned = ? where character_id=? and item_id=?', [req.body.item_status, req.body.char_id, req.body.item_id], function(err, result){
+        err500(err)
+        res.status(200)
+        res.send("ok")
+    })
 })
+
+
+
+
+
+try{
+    var server = app.listen(8080, function () {
+        var host = server.address().address
+        var port = server.address().port
+        console.log("Listening at http://%s:%s", host, port)
+
+    })
+}
+catch(error) {
+    console.log(error);
+}
