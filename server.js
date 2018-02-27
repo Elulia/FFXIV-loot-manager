@@ -157,10 +157,7 @@ api.post('/set', function (req, res) {
             res.status(500)
             res.send("aryala failed to answer")
             res1.resume();
-          }else if (!/^application\/json/.test(contentType)) {
-            res.status(500)
-            res.send("aryala didn’t send json !")
-            res1.resume();
+            return;
           }
           res1.setEncoding('utf8');
           let rawData = '';
