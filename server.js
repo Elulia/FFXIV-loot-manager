@@ -20,6 +20,15 @@ var con = mysql.createConnection({
   database: process.env.MYSQL_DB || "FFXIV"
 });
 
+function err500(err){
+    if (err) {
+        console.log(err);
+        res.status(500);
+        res.send("MySQL error");
+        return;
+    }
+}
+
 con.connect(function(err) {
   if (err) {
     console.log(err);
@@ -44,7 +53,7 @@ api.get('/fullteam/:id', function(req,res){
       promises.push(
         new Promise(function(resolve, reject) {
           //TODO
-          con.query("SELECT name, amount, currency, type, instance, owned as status FROM items inner join sets on items.id = sets.item_id inner join characters_items on items.id = characters_items.item_id where set_id = ? ",[result[i].set_id, result[i].char_id] ,function (err, set_result) {
+          con.query("SELECT name, amount, currency, type, instance, owned as status, items.id FROM items inner join sets on items.id = sets.item_id inner join characters_items on items.id = characters_items.item_id where set_id = ? and characters_items.character_id=?",[result[i].set_id, result[i].char_id] ,function (err, set_result) {
             
             resolve(set_result)
           })
@@ -217,28 +226,18 @@ api.post('/set', function (req, res) {
 
 
 function character_set(id, set_id, items, team_id){
-    console.log('lol')
-    con.query('insert into characters_sets(character_id,set_id) values(?,?)',[id, set_id], function(err, result){
+    con.query('insert ignore into characters_sets(character_id,set_id) values(?,?)',[id, set_id], function(err, result){
         err500(err)
     })
     con.query('update characters_teams set set_id = ? WHERE character_id = ? and team_id = ?',[set_id, id, team_id], function(err, result){
         err500(err)
     })
     for (var i = items.length - 1; i >= 0; i--) {
-        con.query('insert into characters_items(character_id,item_id) values(?,?)',[id, items[i].itemID], function(err, result){
+        con.query('insert ignore into characters_items(character_id,item_id) values(?,?)',[id, items[i].itemID], function(err, result){
             err500(err)
         })
     }
 
-}
-
-function err500(err){
-    if (err) {
-        console.log(err);
-        res.status(500);
-        res.send("MySQL error");
-        return;
-    }
 }
 
 api.put('/set/:id', function (req, res) {
@@ -317,6 +316,15 @@ api.put('/character', function (req, res) {
     }
   });
 });
+
+api.post('/character/item', function(req,res){
+    console.log(req.body)
+    con.query('update characters_items set owned = ? where character_id=? and item_id=?', [req.body.item_status, req.body.char_id, req.body.item_id], function(err, result){
+        err500(err)
+        res.status(200)
+        res.send("ok")
+    })
+})
 
 
 

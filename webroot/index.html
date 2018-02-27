@@ -52,13 +52,12 @@
 						</td>
 						<td>
 							<div class="roundedOne">
-								<input type="checkbox" v-bind:id="i" v-bind:name="i" />
+								<input type="checkbox" v-bind:id="i" v-bind:name="i" v-model="item.status" v-on:click="changeStatus(char_id, item.id, item.status)"/>
 								<label v-bind:for="i"></label>
 							</div>
 						</td>
 					</tr>
 				</table>
-				<input v-on:click="sendOwned" type="submit" name=""> 
 			</form>
 		</section>
 

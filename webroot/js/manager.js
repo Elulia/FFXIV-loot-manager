@@ -26,6 +26,7 @@ $(function(){
 			page: '',
 			title: '',
 			team_id:-1,
+			char_id:-1,
 			d: {},
 		},
 		created:function(){
@@ -63,9 +64,8 @@ $(function(){
 							sum=0
 							concat=[]
 							for (item_id in mate.set){
-								//if(item.status != true){
-									item=mate.set[item_id]
-									console.log(item.currency)
+								item=mate.set[item_id]
+								if(item.status != true){
 										if (item.currency == currency_list[0]){
 											this.d.sums[mate.name][2] += 1;
 											glaze+=1
@@ -85,7 +85,7 @@ $(function(){
 											concat.push(drop.type)
 										}
 									}
-								//}
+								}
 							}
 							this.d.sums[mate.name][i] += sum
 							this.d.sums[mate.name][i+1] = concat.join(", ");
@@ -94,7 +94,6 @@ $(function(){
 						this.d.sums[mate.name].splice(4,0,(glaze/4))
 						this.d.sums[mate.name].splice(7,0,(twine/4))
 					}
-					console.log(this.d.sums)
 				})
 			},
 			goIndex: function(){
@@ -112,8 +111,10 @@ $(function(){
 					mate=this.d.team[mate_id]
 					if(mate.name==playerName){
 						this.d.items=mate.set
+						this.char_id = mate.id
 					}
 				}
+
 			},
 
 			/* Data fetch functions */
@@ -178,9 +179,12 @@ $(function(){
 				console.log([id,40,link])
 				if(link != null){
 					values = link.split('/')
-					console.log('blu')
 					$.post("/api/1.0/set", {'id':id,'team_id':40,'link':values[values.length-1]});
 				}
+			},
+			changeStatus: function(char_id, item_id, item_status){
+				$.post("/api/1.0/character/item", {'char_id':char_id, 'item_id':item_id, 'item_status':((item_status == 0) ? 1 : 0)})
+				.done
 			}
 		}
 	})
