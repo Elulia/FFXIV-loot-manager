@@ -176,15 +176,18 @@ $(function(){
 			},
 			newSet: function(id){
 				link = window.prompt('lien ariyala :')
-				console.log([id,40,link])
+				console.log([id,this.team_id,link])
 				if(link != null){
 					values = link.split('/')
-					$.post("/api/1.0/set", {'id':id,'team_id':40,'link':values[values.length-1]});
+					$.post("/api/1.0/set", {'id':id,'team_id':this.team_id,'link':values[values.length-1]}, data=>{
+						console.log('blue')
+						goTeam(this.team_id)
+					});
 				}
+
 			},
 			changeStatus: function(char_id, item_id, item_status){
 				$.post("/api/1.0/character/item", {'char_id':char_id, 'item_id':item_id, 'item_status':((item_status == 0) ? 1 : 0)})
-				.done
 			}
 		}
 	})
