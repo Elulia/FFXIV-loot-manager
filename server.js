@@ -162,8 +162,8 @@ api.post('/set', function (req, res) {
           res1.setEncoding('utf8');
           let rawData = '';
           res1.on('data', (chunk) => { rawData += chunk; });
-            res1.on("end", function(data){
-                truc = JSON.parse(data);
+            res1.on("end", () => {
+                truc = JSON.parse(rawData);
                 items = Object.values(truc.datasets[truc.content].normal.items);
                 request({
                     header:{
