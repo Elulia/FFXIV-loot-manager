@@ -110,11 +110,21 @@ $(function(){
 				for (mate_id in this.d.team){
 					mate=this.d.team[mate_id]
 					if(mate.name==playerName){
-						this.d.items=mate.set
+						for (var i = mate.set.length - 1; i >= 0; i--) {
+							mate.set[i].type
+						}
+						this.d.items=mate.set.sort(function(item1,item2){
+							tab={"chest":2, "ears":7, "feet":6, "hands":3, "head":1, "legs":5, "mainhand":0, "neck":8, "ring":10, "waist":4, "wrist":9, "food":11}
+							return (tab[item1.type]-tab[item2.type])
+						})
 						this.char_id = mate.id
 					}
 				}
 
+			},
+			sortItem: function(item1,item2){
+				tab={"chest":2, "ears":7, "feet":6, "hands":3, "head":1, "legs":5, "mainhand":0, "neck":8, "ring":10, "waist":4, "wrist":9}
+				return (tab[item1.type]-tab[item2.type])
 			},
 
 			/* Data fetch functions */

@@ -27,19 +27,18 @@ input[type=checkbox] {
 	background: #66C5D5;
 }
 .head th{
-	background-color: #AAAAAA;
+	background-color: rgb(46, 46, 46);;
 }
 tr:nth-child(odd) td{
-	background-color: #E6E6E6;
+	background-color: rgb(35, 35, 35);
 }
 tr:nth-child(odd):hover td, .table tbody tr:hover td{
-	background-color: rgba(175,210,215,0.5);
+	background-color: #033a3d;
 }
-table tbody .head:hover, table tbody .head{
-	background-color: transparent;
+table tbody .head:hover td, table tbody .head{
+	background-color: rgb(24,24,24);
 }
 #corner {
-	background-color: transparent;
 	border-top: none;
 	border-left: none;
 }
@@ -51,7 +50,6 @@ table td, table tbody .head th{
 }
 
 .table tbody tr .button_link, .table tbody tr .button_link:hover {
-	background-color: transparent;
 	padding: 5px;
 	margin: 0;
 	border-top:none;
@@ -60,4 +58,24 @@ table td, table tbody .head th{
 	width: 1%;
 	white-space: nowrap;
 	vertical-align: middle;
+}
+.table tbody tr .button_link{
+	background-color: transparent;
+}
+
+a{
+	cursor:pointer;
+}
+html, body, main, #corner{
+	background-color: rgb(24,24,24);
+	color: rgb(204, 204, 204);
+}
+
+button{
+	background-color: transparent;
+	border: 1px solid white;
+	border-radius: 5px;
+}
+a:focus, a:hover{
+	color:#5584AE;
 }
